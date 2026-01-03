@@ -1,4 +1,3 @@
-
 import { ChatMessage } from "../types";
 
 // Default to 127.0.0.1 which is more reliable than localhost on Windows/IPv6 setups
@@ -15,10 +14,9 @@ export const setOllamaUrl = (url: string) => {
     if (cleaned.endsWith('/api/generate')) cleaned = cleaned.replace('/api/generate', '');
     if (cleaned.endsWith('/api/chat')) cleaned = cleaned.replace('/api/chat', '');
     
-    // Auto-fix: Append port 11434 if no port is specified and it's not a standard http/https port assumption
-    // Regex checks for :<digits> at the end of the string
+    // Auto-append port 11434 if no port is specified (except for https/ngrok cases)
     const hasPort = /:\d+$/.test(cleaned);
-    if (!hasPort && !cleaned.startsWith('https://')) { // Don't append port to https (ngrok) by default unless explicit
+    if (!hasPort && !cleaned.startsWith('https://')) {
         cleaned = `${cleaned}:11434`;
         console.log(`[System] Auto-appended port 11434. New URL: ${cleaned}`);
     }
@@ -29,105 +27,15 @@ export const setOllamaUrl = (url: string) => {
 
 export const getOllamaUrl = () => OLLAMA_BASE_URL;
 
-// --- MOCK FALLBACK SYSTEM ---
-const generateMockResponse = (prompt: string, jsonMode: boolean): string => {
-    console.warn("[System] Generating Mock Response due to API failure.");
-    
-    if (jsonMode) {
-        if (prompt.includes("strategy") || prompt.includes("Simulate a military")) {
-            return JSON.stringify({
-                title: "Operation Silent Echo (Simulation)",
-                summary: "Due to local AI unavailability, this is a pre-calculated simulation result. The operation focuses on stabilizing the northern sector using asymmetric drone tactics while securing key infrastructure.",
-                adversary_analysis: {
-                    profile: "Hybrid Insurgent Force",
-                    perception_filter: "Opportunistic / Resource-Driven",
-                    likely_response: "Dispersal into urban cover",
-                    red_lines: ["Heavy Artillery Use", "Civilian Displacement > 10k"]
-                },
-                cross_domain_matrix: {
-                    military_readiness: 85,
-                    diplomatic_trust: 60,
-                    economic_cost: 40,
-                    domestic_morale: 75,
-                    legal_compliance: 90
-                },
-                resource_impact: {
-                    fuel_depletion: 12,
-                    ammo_depletion: 8,
-                    budget_burn: 15,
-                    manpower_stress: 30
-                },
-                strategic_options: [
-                    { id: "opt1", name: "Drone Swarm containment", description: "Deploy localized UAVs to track and hem in hostile movements.", deterrence_score: 75, cost_projection: "Low", civilian_risk: "Low", win_probability: 85 },
-                    { id: "opt2", name: "Rapid Quick Reaction Force", description: "Heliborne assault on key stronghold.", deterrence_score: 90, cost_projection: "High", civilian_risk: "Medium", win_probability: 70 }
-                ],
-                rationale: "Option 1 provides the best balance of risk vs reward in the current political climate.",
-                outcome_vector: "Stabilization within 48 hours"
-            });
-        }
-        if (prompt.includes("risk assessments") || prompt.includes("knowledge")) {
-            return JSON.stringify([
-                { subject: "Border Security", A: 78, fullMark: 100 },
-                { subject: "Cyber Resilience", A: 92, fullMark: 100 },
-                { subject: "Supply Chain", A: 65, fullMark: 100 },
-                { subject: "Civil Stability", A: 88, fullMark: 100 },
-                { subject: "Climate Impact", A: 70, fullMark: 100 }
-            ]);
-        }
-        if (prompt.includes("personnel risk") || prompt.includes("Student")) {
-            return JSON.stringify({
-                risk_level: "Medium",
-                risk_score: 45,
-                retention_forecast: [
-                    { month: "Jan", rate: 95, risk_factor: "None" },
-                    { month: "Feb", rate: 92, risk_factor: "Workload" },
-                    { month: "Mar", rate: 88, risk_factor: "External Stress" }
-                ],
-                misconduct_risks: [
-                    { id: "FLAG-01", risk_level: "Low", markers: ["Late Arrival"], probability: 15 }
-                ],
-                unit_health_summary: "Overall unit health is stable but showing signs of fatigue in 3rd platoon."
-            });
-        }
-        if (prompt.includes("material")) {
-            return JSON.stringify([
-                { id: "MAT-X1", type: "Graphene-Composite", property: "Ballistic Resistance", score: 98, status: "Testing" },
-                { id: "MAT-X2", type: "Titanium Alloy", property: "Heat Dissipation", score: 85, status: "Production" },
-                { id: "MAT-X3", type: "Ceramic Matrix", property: "Weight Reduction", score: 92, status: "Prototyping" }
-            ]);
-        }
-        if (prompt.includes("swarm")) {
-            return JSON.stringify([
-                "[SYSTEM] Swarm Protocol Initiated (Simulation Mode)",
-                "[AGENT_1] Scanning sector 4...",
-                "[AGENT_2] Logistics constraint identified at Bridge Alpha.",
-                "[CMD_CORE] Rerouting convoy via Route B.",
-                "[EXEC] Optimization complete. +15% Efficiency."
-            ]);
-        }
-        // Default empty object for unknown JSON requests to prevent crashes
-        return "{}";
-    } else {
-        // Text Mode Mock
-        if (prompt.includes("briefing")) {
-            return "TACTICAL BRIEFING (SIMULATED)\n\n1. SITUATION: Adversary forces entrenched in high ground. Weather is clear. Supply lines active.\n2. MISSION: Dislodge hostiles and secure key infrastructure.\n3. EXECUTION: Phase 1 Air Interdiction, followed by ground maneuver.\n4. LOGISTICS: Fuel and Ammo at 90%.\n5. COMMAND: Signals operative. Proceed on my mark.";
-        }
-        if (prompt.includes("report")) {
-            return "REPORT: OPERATIONS SUMMARY\n\nDATE: 2024-10-24\nSTATUS: GREEN\n\nAll sectors report nominal status. Logistics throughput at 94%. Intelligence indicates reduced chatter in northern sector. Recommend maintaining current posture.";
-        }
-        return "System is operating in offline simulation mode. Connection to local AI core was not established. This data is generated for interface demonstration purposes.";
-    }
-};
-
 // --- CORE OLLAMA FUNCTIONS ---
 
 // Generic Generate (Non-Streaming)
 async function queryOllama(prompt: string, system: string = "", jsonMode: boolean = false): Promise<string> {
     const url = `${OLLAMA_BASE_URL}/api/generate`;
+    
     try {
         const controller = new AbortController();
-        // Shortened timeout for quicker fallback to mock
-        const timeoutId = setTimeout(() => controller.abort(), 5000); 
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
 
         console.log(`[Ollama] Sending request to ${url} (Model: ${MODEL})`);
 
@@ -135,10 +43,10 @@ async function queryOllama(prompt: string, system: string = "", jsonMode: boolea
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true' // Bypasses Ngrok free tier warning page
+                'ngrok-skip-browser-warning': 'true'
             },
             mode: 'cors',
-            credentials: 'omit', // Important for localhost CORS
+            credentials: 'omit',
             body: JSON.stringify({
                 model: MODEL,
                 prompt: prompt,
@@ -147,11 +55,12 @@ async function queryOllama(prompt: string, system: string = "", jsonMode: boolea
                 format: jsonMode ? 'json' : undefined,
                 options: {
                     temperature: 0.7,
-                    num_ctx: 4096
+                    num_ctx: 8192
                 }
             }),
             signal: controller.signal
         });
+
         clearTimeout(timeoutId);
 
         if (!response.ok) {
@@ -159,28 +68,27 @@ async function queryOllama(prompt: string, system: string = "", jsonMode: boolea
         }
         
         const data = await response.json();
-        return data.response;
-    } catch (e: any) {
-        console.warn("Ollama Connection Failed, falling back to mock data.", e);
-        return generateMockResponse(prompt, jsonMode);
+        return data.response?.trim() || '';
+    } catch (error: any) {
+        console.error('Ollama connection failed:', error);
+        throw new Error('LOCAL AI ERROR — Ollama not running or blocked. Start "ollama serve" and ensure port 11434 is open.');
     }
 }
 
-// Chat Stream (Using /api/chat which is better for conversation)
+// Chat Stream (/api/chat – better for conversation history)
 async function* streamOllamaChat(messages: {role: string, content: string}[], system?: string): AsyncGenerator<string, void, unknown> {
     const url = `${OLLAMA_BASE_URL}/api/chat`;
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     try {
-        // Construct payload including system message if present
         const payloadMessages = system ? [{ role: 'system', content: system }, ...messages] : messages;
 
         const response = await fetch(url, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true' // Bypasses Ngrok free tier warning page
+                'ngrok-skip-browser-warning': 'true'
             },
             mode: 'cors',
             credentials: 'omit',
@@ -190,24 +98,20 @@ async function* streamOllamaChat(messages: {role: string, content: string}[], sy
                 stream: true,
                 options: {
                     temperature: 0.7,
-                    num_ctx: 4096
+                    num_ctx: 8192
                 }
             }),
             signal: controller.signal
         });
 
-        clearTimeout(timeoutId); // Clear initial connection timeout
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
-            // Fallback for stream
-            yield "Error: Local AI Offline. Switching to Simulation Mode...\n\n";
-            yield generateMockResponse(messages[messages.length-1].content, false);
-            return;
+            throw new Error(`Ollama API Error: ${response.status}`);
         }
 
         if (!response.body) {
-            yield "Error: No response body.";
-            return;
+            throw new Error('No response body');
         }
 
         const reader = response.body.getReader();
@@ -224,31 +128,27 @@ async function* streamOllamaChat(messages: {role: string, content: string}[], sy
                 if (!line.trim()) continue;
                 try {
                     const json = JSON.parse(line);
-                    // /api/chat returns 'message' object with 'content'
-                    if (json.message && json.message.content) {
+                    if (json.message?.content) {
                         yield json.message.content;
                     }
                     if (json.done) return;
-                } catch (e) { 
-                    // ignore partial json
+                } catch {
+                    // Ignore malformed lines
                 }
             }
         }
-    } catch (e: any) {
-        console.warn("Ollama Stream Error, falling back to mock.", e);
-        yield ":: SYSTEM NOTICE :: Local AI Connection Failed. Showing simulated response.\n\n";
-        yield generateMockResponse(messages[messages.length-1].content, false);
+    } catch (error: any) {
+        console.error('Ollama stream error:', error);
+        yield '[ERROR] Local AI offline. Start Ollama with "ollama serve".';
     }
 }
 
-// Helper to clean JSON string
+// Helper to clean JSON strings
 const cleanJson = (text: string): string => {
-    if (!text) return "{}";
+    if (!text) return '{}';
     let cleaned = text.trim();
-    // Remove markdown code blocks
-    cleaned = cleaned.replace(/^```json/, '').replace(/^```/, '').replace(/```$/, '');
+    cleaned = cleaned.replace(/^```json\s?/, '').replace(/^```\s?/, '').replace(/```$/, '');
     
-    // Try to extract JSON object if surrounded by text
     const firstBrace = cleaned.indexOf('{');
     const lastBrace = cleaned.lastIndexOf('}');
     const firstBracket = cleaned.indexOf('[');
@@ -272,22 +172,19 @@ export async function* streamSLASResponse(
   image?: string
 ): AsyncGenerator<string, void, unknown> {
     
-    // System Instruction
     const systemPrompt = `You are SLAS (Smart Leadership Assistant System) for the Ethiopian National Defence Force. 
     Current Context: ${context}. 
     User Language: ${language}. 
     Be tactical, concise, and authoritative. Provide military-grade analysis.`;
 
-    // Convert App ChatMessage to Ollama Message Format
     const ollamaMessages = history.map(h => ({
         role: h.role === 'model' ? 'assistant' : 'user',
         content: h.text
     }));
 
-    // Add current user prompt
     let currentContent = prompt;
     if (image) {
-        currentContent += "\n[SYSTEM: User attached an image. Simulate analysis of visual intel relative to context.]";
+        currentContent += "\n[User attached an image – describe visual intel if relevant.]";
     }
     ollamaMessages.push({ role: 'user', content: currentContent });
 
@@ -297,17 +194,16 @@ export async function* streamSLASResponse(
 // --- GENERATION FUNCTIONS ---
 
 export const generateSpeech = async (text: string, voice: string = 'Kore'): Promise<AudioBuffer | null> => {
-    // Llama 3 is text-only. 
-    return null;
+    return null; // Llama3 is text-only
 };
 
-export const runStrategySimulation = async (scenario: string, mode: string, language: string, params?: any): Promise<string> => {
+export const runStrategySimulation = async (scenario: string, mode: string, language: string, params?: any): Promise<any> => {
     const system = "You are a Military Strategic AI. Output STRICT JSON only.";
     const prompt = `Simulate a military strategy.
     Scenario: ${scenario}
     Mode: ${mode} (Red Team vs Blue Team)
     Language: ${language}
-    Params: ${JSON.stringify(params)}
+    Params: ${JSON.stringify(params || {})}
     
     Return a JSON object with this exact schema:
     {
@@ -320,11 +216,11 @@ export const runStrategySimulation = async (scenario: string, mode: string, lang
             "red_lines": ["Line 1", "Line 2"]
         },
         "cross_domain_matrix": {
-            "military_readiness": 0-10,
-            "diplomatic_trust": 0-10,
-            "economic_cost": 0-10,
-            "domestic_morale": 0-10,
-            "legal_compliance": 0-10
+            "military_readiness": 0-100,
+            "diplomatic_trust": 0-100,
+            "economic_cost": 0-100,
+            "domestic_morale": 0-100,
+            "legal_compliance": 0-100
         },
         "resource_impact": {
             "fuel_depletion": 0-100,
@@ -339,10 +235,11 @@ export const runStrategySimulation = async (scenario: string, mode: string, lang
         "outcome_vector": "Prediction"
     }`;
 
-    return await queryOllama(prompt, system, true);
+    const res = await queryOllama(prompt, system, true);
+    return JSON.parse(cleanJson(res));
 };
 
-export const runAdvancedSimulation = async (simType: string, params: any): Promise<string> => {
+export const runAdvancedSimulation = async (simType: string, params: any): Promise<any> => {
     const system = "You are a specialized Military Simulation AI. Output STRICT JSON only.";
     let prompt = "";
 
@@ -372,13 +269,13 @@ export const runAdvancedSimulation = async (simType: string, params: any): Promi
     }
 
     const res = await queryOllama(prompt, system, true);
-    return cleanJson(res);
+    return JSON.parse(cleanJson(res));
 };
 
 export const analyzePersonnelRisk = async (unit: string, metrics: any): Promise<any> => {
     const prompt = `Analyze personnel risk for ${unit} based on: ${JSON.stringify(metrics)}.
     Return JSON: {
-        "risk_level": "Low/Med/High",
+        "risk_level": "Low/Medium/High",
         "risk_score": 0-100,
         "retention_forecast": [{"month": "M1", "rate": 0-100, "risk_factor": "Reason"}],
         "misconduct_risks": [{"id": "ID", "risk_level": "Lvl", "markers": ["m1"], "probability": 0-100}],
@@ -398,10 +295,10 @@ export const analyzeFieldInsight = async (insight: string, language: string, aud
 
 export const searchIntelligence = async (query: string, location?: {lat: number, lng: number}): Promise<{text: string, sources: any[]}> => {
     const locStr = location ? `at ${location.lat}, ${location.lng}` : "";
-    const prompt = `Simulate an intelligence search result for "${query}" ${locStr}. 
-    Provide a concise summary of hypothetical recent events or data points relevant to a defense context.`;
+    const prompt = `Perform an intelligence search for "${query}" ${locStr}. 
+    Provide a concise summary of relevant defense-related findings.`;
     
-    const text = await queryOllama(prompt, "You are an Intelligence Analyst. Provide realistic simulated intel.");
+    const text = await queryOllama(prompt, "You are an Intelligence Analyst.");
     
     return {
         text,
@@ -413,12 +310,12 @@ export const searchIntelligence = async (query: string, location?: {lat: number,
 };
 
 export const runTerminalCommand = async (command: string): Promise<string> => {
-    return await queryOllama(`Simulate the terminal output for the command: "${command}". Be technical and brief.`, "You are a Linux Terminal.");
+    return await queryOllama(`Execute the terminal command: "${command}". Provide realistic output.`, "You are a Linux Terminal.");
 };
 
 export const parseDataEntry = async (input: string, context: string): Promise<any> => {
-    const prompt = `Extract structured data from "${input}" for a form in context: ${context}.
-    Return JSON key-value pairs matching typical military form fields (e.g., unit_id, quantity, status, location).`;
+    const prompt = `Extract structured data from "${input}" for context: ${context}.
+    Return JSON with relevant military form fields (e.g., unit_id, quantity, status, location).`;
     const res = await queryOllama(prompt, "JSON Extractor", true);
     return JSON.parse(cleanJson(res));
 };
@@ -430,7 +327,8 @@ export const generateDynamicData = async (prompt: string, schema: string): Promi
     try {
         return JSON.parse(cleanJson(res));
     } catch (e) {
-        return [];
+        console.error('JSON parse error in dynamic data:', e);
+        return {};
     }
 };
 
@@ -468,12 +366,11 @@ export const analyzeSatelliteTarget = async (coords: string, name: string, langu
 };
 
 export const analyzeSatelliteRecon = async (image: string, mime: string, context: string): Promise<any> => {
-    const prompt = `Simulate an analysis of a satellite reconnaissance image for context: ${context}.
-    Assume standard military targets.
+    const prompt = `Analyze reconnaissance imagery for context: ${context}.
     Return JSON: {
-        "strategic_value": "High/Med/Low",
-        "threat_assessment": "Desc",
-        "terrain_analysis": "Desc",
+        "strategic_value": "High/Medium/Low",
+        "threat_assessment": "Description",
+        "terrain_analysis": "Description",
         "tactical_recommendation": "Action",
         "assets_detected": [{"type": "Tank/Truck/Plane", "count": number, "confidence": 0-100}]
     }`;
@@ -493,9 +390,9 @@ export const generateRadioChatter = async (): Promise<any[]> => {
 };
 
 export const analyzeCombatAudio = async (base64: string, mime: string): Promise<any> => {
-    const prompt = `Simulate analysis of a battlefield audio recording.
+    const prompt = `Analyze battlefield audio recording.
     Return JSON: {
-        "voice_stress_level": "Low/Med/High/Panic",
+        "voice_stress_level": "Low/Medium/High/Panic",
         "keywords_detected": ["Contact", "Ammo", "Medic"],
         "environment_sounds": ["Gunfire", "Explosion", "Wind"],
         "summary": "Brief situation report"
