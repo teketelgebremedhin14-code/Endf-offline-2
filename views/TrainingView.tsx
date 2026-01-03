@@ -4,7 +4,7 @@ import { GraduationCap, Users, Book, BrainCircuit, Target, MapPin, Award, Globe,
 import MetricCard from '../components/MetricCard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { generateExamQuestion, evaluateApplicant, draftSRSCommunication, generateCourseRecommendations, analyzeStudentRisk, generateInterventionPlan, generateCurriculumGapAnalysis } from '../services/geminiService';
+import { generateExamQuestion, evaluateApplicant, draftSRSCommunication, generateCourseRecommendations, analyzeStudentRisk, generateInterventionPlan, generateCurriculumGapAnalysis } from '../services/ollamaService';
 
 interface TrainingViewProps {
     onBack?: () => void;

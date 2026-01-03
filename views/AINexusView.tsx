@@ -4,7 +4,7 @@ import { BrainCircuit, Activity, Network, TrendingUp, Cpu, Database, Share2, Lay
 import MetricCard from '../components/MetricCard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, LineChart, Line, XAxis, YAxis, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, BarChart, Bar, CartesianGrid } from 'recharts';
-import { runAdvancedSimulation } from '../services/geminiService';
+import { runAdvancedSimulation } from '../services/ollamaService';
 
 interface AINexusViewProps {
     onBack?: () => void;

@@ -4,7 +4,7 @@ import { BrainCircuit, Activity, User, Shield, Zap, RefreshCw, FileText, CheckCi
 import MetricCard from '../components/MetricCard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { runPsychometricAnalysis } from '../services/geminiService';
+import { runPsychometricAnalysis } from '../services/ollamaService';
 
 interface AssessmentQuestion {
     id: number;

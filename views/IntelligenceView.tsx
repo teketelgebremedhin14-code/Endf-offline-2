@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Eye, Radio, ShieldAlert, Wifi, Globe, Terminal, Activity, Share2, Crosshair, Video, Search, ExternalLink, Zap, User, DollarSign, Home, Box, CheckCircle, X, BrainCircuit, Scale, Upload, MapPin, Bot, FileWarning, ScanFace, Lock, AlertTriangle, Network } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import TacticalMap, { Unit } from '../components/TacticalMap';
-import { searchIntelligence, runTerminalCommand } from '../services/geminiService';
+import { searchIntelligence, runTerminalCommand } from '../services/ollamaService';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface OsintResult {

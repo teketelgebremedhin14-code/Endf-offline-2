@@ -4,7 +4,7 @@ import { Swords, Monitor, Activity, Shield, Crosshair, AlertTriangle, Zap, Play,
 import MetricCard from '../components/MetricCard';
 import TacticalMap, { Unit } from '../components/TacticalMap';
 import { useLanguage } from '../contexts/LanguageContext';
-import { generateScenarioBriefing, runStrategySimulation, generateSpeech, generateAAR, expandSimulationDetail } from '../services/geminiService';
+import { generateScenarioBriefing, runStrategySimulation, generateSpeech, generateAAR, expandSimulationDetail } from '../services/ollamaService';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, ReferenceLine } from 'recharts';
 import TaskList from '../components/TaskList';
 import { Task } from '../types';

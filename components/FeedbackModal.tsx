@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Mic, Send, StopCircle, RefreshCw } from 'lucide-react';
-import { analyzeFieldInsight } from '../services/geminiService';
+import { analyzeFieldInsight } from '../services/ollamaService';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface FeedbackModalProps {

@@ -4,7 +4,7 @@ import { Shield, Target, Activity, Globe, Map, BookOpen, Clock, FileText, CheckC
 import MetricCard from '../components/MetricCard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { recommendStrategy } from '../services/geminiService';
+import { recommendStrategy } from '../services/ollamaService';
 import TaskList from '../components/TaskList';
 import { Task } from '../types';
 

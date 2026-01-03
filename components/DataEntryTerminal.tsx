@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, Save, ChevronUp, ChevronDown, Database, Hash, FileText, Check, AlertCircle, X, Camera, Mic, Radio, Image as ImageIcon, Trash2, StopCircle, Upload, Paperclip, Wand2, RefreshCw } from 'lucide-react';
 import { ViewState } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import { parseDataEntry } from '../services/geminiService';
+import { parseDataEntry } from '../services/ollamaService';
 
 interface DataEntryTerminalProps {
     currentView: ViewState;

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Wifi, Radio, Server, Globe, Lock, Activity, ShieldCheck, AlertTriangle, Key, Languages, Mic, X } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { useLanguage } from '../contexts/LanguageContext';
-import { generateRadioChatter } from '../services/geminiService';
+import { generateRadioChatter } from '../services/ollamaService';
 
 interface CommunicationsViewProps {
     onBack?: () => void;

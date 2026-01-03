@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import MetricCard from '../components/MetricCard';
 import { Activity, Users, ShieldAlert, Truck, Radio, Target, BrainCircuit, RefreshCw, AlertTriangle, Satellite, Wifi, Globe, Zap, MapPin, Maximize2, LayoutGrid, Video, Crosshair, Eye, GraduationCap, ChevronRight } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { getStrategicForecast } from '../services/geminiService';
+import { getStrategicForecast } from '../services/ollamaService';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ViewState } from '../types';
 import TacticalMap from '../components/TacticalMap';

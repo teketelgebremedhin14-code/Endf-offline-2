@@ -4,7 +4,7 @@ import { Shield, Map, Activity, Users, Settings, Target, Layers, Truck, Zap, Glo
 import MetricCard from '../components/MetricCard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell } from 'recharts';
-import { analyzeCombatAudio } from '../services/geminiService';
+import { analyzeCombatAudio } from '../services/ollamaService';
 
 // Helper to safely render AI text that might be returned as an object
 const SafeRender = ({ content }: { content: any }) => {

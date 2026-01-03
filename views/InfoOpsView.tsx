@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Megaphone, MessageSquare, ThumbsUp, ThumbsDown, Globe, Edit3, Send, AlertTriangle, X } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { generatePressRelease } from '../services/geminiService';
+import { generatePressRelease } from '../services/ollamaService';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const sentimentData = [

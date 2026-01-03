@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Plus, Search, Filter, Loader, AlertTriangle, Check, MessageSquare, X } from 'lucide-react';
-import { generateReport } from '../services/geminiService';
+import { generateReport } from '../services/ollamaService';
 import DocumentViewer from '../components/DocumentViewer';
 import { useLanguage } from '../contexts/LanguageContext';
 

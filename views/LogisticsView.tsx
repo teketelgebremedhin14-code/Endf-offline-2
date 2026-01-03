@@ -5,7 +5,7 @@ import MetricCard from '../components/MetricCard';
 import LogisticsMap from '../components/LogisticsMap';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { generateDynamicData } from '../services/geminiService';
+import { generateDynamicData } from '../services/ollamaService';
 
 interface SupplyRequest {
     id: string;

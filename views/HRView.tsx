@@ -4,7 +4,7 @@ import { Users, UserPlus, GraduationCap, FileBadge, Navigation, MapPin, BookOpen
 import MetricCard from '../components/MetricCard';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar, LineChart, Line, ComposedChart } from 'recharts';
 import { useLanguage } from '../contexts/LanguageContext';
-import { generateDynamicData, analyzePersonnelRisk } from '../services/geminiService';
+import { generateDynamicData, analyzePersonnelRisk } from '../services/ollamaService';
 
 interface HRViewProps {
     onBack?: () => void;

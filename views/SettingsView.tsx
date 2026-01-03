@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Settings, Bell, Lock, Database, Monitor, Save, RefreshCw, Eye, Globe, Shield, Server, Book, CheckCircle, Info, Layers, ArrowDown, Cpu, Code, Zap, Terminal, AlertTriangle, Copy, Wifi, CloudRain, ExternalLink, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Language } from '../data/translations';
-import { getOllamaUrl, setOllamaUrl } from '../services/geminiService';
+import { getOllamaUrl, setOllamaUrl } from '../services/ollamaService';
 
 interface SettingsViewProps {
     currentMode: 'standard' | 'green' | 'red';

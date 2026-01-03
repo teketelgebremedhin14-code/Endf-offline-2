@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Send, Bot, AlertCircle, StopCircle, Volume2, VolumeX, Radio, Activity, FileText, CheckSquare, Zap, Clock, X, ChevronDown, Camera, Image as ImageIcon } from 'lucide-react';
-import { streamSLASResponse, generateSpeech } from '../services/geminiService';
+import { streamSLASResponse, generateSpeech } from '../services/ollamaService';
 import { ChatMessage } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
