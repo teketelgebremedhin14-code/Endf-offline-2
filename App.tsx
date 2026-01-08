@@ -1,5 +1,9 @@
 
+
+
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
+import EducationTrainingSystem from './views/EducationTrainingSystem';
 import Sidebar from './components/Sidebar';
 import LoginScreen from './components/LoginScreen';
 import SLASAssistant from './components/SLASAssistant';

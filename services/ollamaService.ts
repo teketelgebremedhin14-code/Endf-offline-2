@@ -508,3 +508,5 @@ export const generateCurriculumGapAnalysis = async (grades: any): Promise<any> =
     const res = await queryOllama(prompt, "Curriculum Developer. JSON Only.", true);
     return JSON.parse(cleanJson(res));
 };
+
+export { queryOllama }; // Add this line at the end
